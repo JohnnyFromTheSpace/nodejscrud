@@ -1,0 +1,11 @@
+extends ../layout
+
+// user
+block content
+    h1= title
+    p Welcome to #{title} create new user
+        b: a(href="user/create") +
+    ul#users
+        each user, i in users
+            li: a(href="user/#{user.id}/edit") #{user.fname} #{user.lname}
+

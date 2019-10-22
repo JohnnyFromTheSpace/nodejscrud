@@ -1,25 +1,32 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
+const express = require('express');
+const router = express.Router();
+const { Sequelize, Model, DataTypes } = require('sequelize');
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../../config/config.json')[env];
+let sequelize;
+if (config.use_env_variable)
+    sequelize = new Sequelize(process.env[config.use_env_variable], config);
+else
+    sequelize = new Sequelize(config.database, config.username, config.password, config);
+var models = require("../../models");
 
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'expressjs'
+// check connection to db
+sequelize.authenticate().then(() => {
+    console.log('Connection established successfully.');
+}).catch(err => {
+    console.error('Unable to connect to the database:', err);
+}).finally(() => {
+    sequelize.close();
 });
-connection.connect();
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
-    connection.query('SELECT * FROM user', function (err, users, fields) {
-        if (err) throw err;
+    models.user.findAll().then(function(users) {
         res.render('user/list', {
             title: 'Users',
-            users: users,
+            users: users
         });
     });
-    // connection.end();
 });
 
 module.exports = router;

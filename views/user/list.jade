@@ -7,5 +7,5 @@ block content
         b: a(href="user/create") +
     ul#users
         each user, i in users
-            li: a(href="user/#{user.id}/edit") #{user.fname} #{user.lname}
+            li: a(href="user/#{user.id}/show") #{user.fname} #{user.lname}
 

@@ -4,9 +4,26 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/user/list');
-var userRouter = require('./routes/user/single');
+const { Sequelize, Model, DataTypes } = require('sequelize');
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/config/config.json')[env];
+let sequelize;
+if (config.use_env_variable)
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+else
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
+
+// check connection to db
+sequelize.authenticate().then(() => {
+  console.log('Connection established successfully.');
+}).catch(err => {
+  console.error('Unable to connect to the database:', err);
+}).finally(() => {
+  sequelize.close();
+});
+
+var routes = require('./routes/index');
+var userRouter = require('./routes/user');
 
 var app = express();
 
@@ -20,9 +37,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/user', userRouter);
+app.use('/', routes);
+app.use('/', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -4,16 +4,20 @@ extends ../layout
 block content
     h1= title
     p Welcome to #{title}
-    form(action="/user/#{user.id}/delete" method="DELETE")
-        button(type="submit") delete
 
-    form(action="/user/#{action}" method="#{method}")
+    if action !== 'add'
+        form(id="userf_delete" action="/user/#{user.id}" method="POST")
+
+    form(id="userf" action="/user/#{action}" method="#{method}")
         l name:
         input(type="text" name="fname" placeholder="your name" value="#{user.fname || ''}")
         br
         l surname:
         input(type="text" name="lname" placeholder="your surname" value="#{user.lname || ''}")
         br
-        button(type="submit") save
+    button(type="submit", form="userf") save
+
+    if action !== 'add'
+            button(type="submit" form="userf_delete") delete
 
     p: a(href="/users") list

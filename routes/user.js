@@ -1,24 +1,18 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
+const express = require('express');
+const router = express.Router();
+const userController = require("../controllers/user");
 
-var connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'expressjs'
-});
-connection.connect();
-
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-
-  connection.query('SELECT * FROM user', function (err, rows, fields) {
-    if (err) throw err;
-    res.send(rows);
-  });
-
-  connection.end()
-});
+/* GET users list */
+router.get('/users', userController.list_all);
+/* GET user show */
+router.get('/user/:id/show', userController.show);
+/* GET user create */
+router.get('/user/add', userController.create_show);
+/* POST user create */
+router.post('/user/add', userController.create);
+/* PUT user edit */
+router.post('/user/:id/edit', userController.edit);
+/* DELETE user */
+router.post('/user/:id', userController.delete);
 
 module.exports = router;

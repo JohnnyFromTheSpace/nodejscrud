@@ -11,8 +11,8 @@ module.exports = {
      * @param next
      */
     list_all: (req, res, next) => {
-        User.findAll().then(function(users) {
-            res.render('user/list', {
+        User.findAll().then(function (users) {
+            res.render('user/index', {
                 title: 'Users',
                 users: users
             });
@@ -27,34 +27,22 @@ module.exports = {
      * @param next
      */
     show: (req, res, next) => {
-        console.log('show test');
         let id = parseInt(req.params.id);
-        let action = `${id}/edit`;
 
-        User.findByPk(id).then(function(user) {
-            res.render('user/single', {
-                title: 'Show user',
-                action: action,
-                method: 'POST',
-                user: user,
-            });
+        User.findByPk(id).then(function (user) {
+            res.render('user/show', user.dataValues);
         });
     },
     /**
-     * User show create
+     * User create, blank page for new user
      *
      * @method GET
      * @param req
      * @param res
      * @param next
      */
-    create_show: (req, res, next) => {
-        res.render('user/single', {
-            title: 'User add',
-            action: 'add',
-            method: 'POST',
-            user: []
-        });
+    create_get: (req, res, next) => {
+        res.render('user/create');
     },
     /**
      * User create
@@ -64,16 +52,32 @@ module.exports = {
      * @param res
      * @param next
      */
-    create: (req, res, next) => {
-        let fname = req.body.fname;
-        let lname = req.body.lname;
-        const user = User.build({ fname: fname, lname: lname });
-
-        user.save().then(() => {
+    create_post: (req, res, next) => {
+        User.create({
+            first_name: req.body.firstname,
+            last_name: req.body.lastname,
+            email: req.body.email,
+        }).then(() => {
             // go to user list page if user created
             res.redirect('../users');
+        }).catch((err) => {
+            res.render('error', err);
         }).finally(() => {
 
+        });
+    },
+    /**
+     * User edit
+     *
+     * @method GET
+     * @param req
+     * @param res
+     * @param next
+     */
+    edit_get: (req, res, next) => {
+        let id = parseInt(req.params.id);
+        User.findByPk(id).then(function (user) {
+            res.render('user/edit', user.dataValues);
         });
     },
     /**
@@ -84,20 +88,21 @@ module.exports = {
      * @param res
      * @param next
      */
-    edit: (req, res, next) => {
-        let id = req.params.id;
-        let fname = req.body.fname;
-        let lname = req.body.lname;
-        const user = User.update(
-            { fname: fname, lname: lname },
-            { where: { id: id}}
-        );
-
-        user.then(() => {
-
-        }).finally(() => {
-
-        });
+    edit_post: (req, res, next) => {
+        const user = {
+            first_name: req.body.firstname,
+            last_name: req.body.lastname,
+            email: req.body.email
+        };
+        User.update(user, {
+            where: {
+                id: req.params.id
+            }
+        }).then((user) => {
+            res.redirect('/users')
+        }).catch((err) => {
+            res.render('error', err);
+        })
     },
     /**
      * User delete
@@ -110,8 +115,8 @@ module.exports = {
     delete: (req, res, next) => {
         let id = parseInt(req.params.id);
 
-        User.destroy({ where: { id: id } }).then(function(){
-            res.redirect('../users');
+        User.destroy({where: {id: id}}).then(function () {
+            res.redirect('/users');
         });
     }
 };

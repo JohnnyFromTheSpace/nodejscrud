@@ -1,0 +1,31 @@
+<div class="col-md-10 col-md-offset-1">
+    <h2>Users</h2><a href="/user/add" class="btn btn-primary text-right btn-sm">Add user</a>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Register data</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each users}}
+            <tr>
+                <td>{{first_name}}</td>
+                <td>{{last_name}}</td>
+                <td>{{email}}</td>
+                <td>{{date_register}}</td>
+                <td>
+                    <a href="/user/{{id}}/show" class="btn btn-success btn-sm">Show</a>
+                    <a href="/user/{{id}}/edit" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="/user/{{id}}/delete" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+    <br />
+    <a href="/">Home</a>
+</div>
